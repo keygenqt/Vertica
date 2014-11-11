@@ -1,5 +1,5 @@
 {
-    "name": "yii2-vertica",
+    "name": "keygen/yii2-vertica",
     "description": "Vertica integration and ActiveRecord for the Yii framework",
     "keywords": ["yii2", "vertica", "active-record", "search", "fulltext"],
     "type": "yii2-extension",

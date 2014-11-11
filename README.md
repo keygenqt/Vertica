@@ -45,16 +45,21 @@ Installation
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
-Either run
-
-```
-php composer.phar require --prefer-dist yiisoft/yii2-vertica "*"
-```
-
-or add
+Either add
 
 ```json
-"yiisoft/yii2-vertica": "*"
+{
+    "require": {
+        ...
+        "keygenqt/yii2-vertica": "dev-master" 
+    },
+    "repositories":[
+        {
+            "type": "git",
+            "url": "https://github.com/keygenqt/yii2-vertica.git"
+        }
+    ]
+}
 ```
 
 to the require section of your composer.json.

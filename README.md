@@ -7,6 +7,8 @@ This extension provides the [vertica](https://my.vertica.com/vertica-documentati
 It includes basic querying/search support and also implements the `ActiveRecord` pattern that allows you to store active
 records in vertica.
 
+Powered by odbc_connect();
+
 To use this extension, you have to configure the Connection class in your application configuration:
 
 ```php

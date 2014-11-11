@@ -1,6 +1,8 @@
 Vertica Query and ActiveRecord for Yii 2
 ==============================================
 
+(Alpha version - work: migrations, grid (yet without filters), finds, save well, etc.)
+
 This extension provides the [vertica](https://my.vertica.com/vertica-documentation/) integration for the Yii2 framework.
 It includes basic querying/search support and also implements the `ActiveRecord` pattern that allows you to store active
 records in vertica.

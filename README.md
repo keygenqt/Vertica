@@ -15,7 +15,7 @@ return [
     'components' => [
         'vertica' => [
             'class' => 'yii\vertica\Connection',
-            'dsn' => 'Driver=Vertica;Server=localhost;Database=my-data-base;',
+            'dsn' => 'Driver=Vertica;Server=localhost;Database=my-database;',
             'username' => 'username',
             'password' => 'password-base',
         ],

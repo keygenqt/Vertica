@@ -67,7 +67,7 @@ to the require section of your composer.json.
 Using the ActiveRecord
 ----------------------
 
-The following is an example model called `Customer`:
+The following is an example model called `Admins`:
 
 ```php
 namespace app\models;

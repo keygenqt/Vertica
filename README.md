@@ -92,13 +92,7 @@ class Admins extends ActiveRecord
         ];
     }
 
-    /**
-	 * @return array attributes labels.
-	 */
-	public function attributeLabels()
-    {
-        return [];
-    }
+    ...
     
     public function search($params)
     {

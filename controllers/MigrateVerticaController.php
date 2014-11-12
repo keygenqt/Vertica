@@ -56,7 +56,7 @@ class MigrateVerticaController extends \yii\console\controllers\BaseMigrateContr
     /**
      * @inheritdoc
      */
-    public $templateFile = '@yii/../yii2-vertica/views/migration.php';
+    public $templateFile = '@yii/../../keygenqt/yii2-vertica/views/migration.php';
     /**
      * @var Connection|string the DB connection object or the application
      * component ID of the DB connection.

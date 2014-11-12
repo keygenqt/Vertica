@@ -1,25 +1,12 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
 
 namespace yii\vertica;
 
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
-use yii\base\InvalidParamException;
-use yii\helpers\Json;
 
 /**
- * elasticsearch Connection is used to connect to an elasticsearch cluster version 0.20 or higher
- *
- * @property string $driverName Name of the DB driver. This property is read-only.
- * @property boolean $isActive Whether the DB connection is established. This property is read-only.
- * @property QueryBuilder $queryBuilder This property is read-only.
- *
  * @author Vitaliy Zarubint <keygenqt@gmail.com>
  * @since 2.0
  */
@@ -30,15 +17,37 @@ class Connection extends Component
      */
     const EVENT_AFTER_OPEN = 'afterOpen';
 
+    /**
+     * @var array the active connect.
+     */
+    public $activeConnect;
+    
+    /**
+     * @var string database name
+     */
     public static $db;
 
+    /**
+     * @var string dsn connect data
+     */
     public $dsn;
+    
+    /**
+     * @var string user database vertica
+     */
     public $username;
+    
+    /**
+     * @var string password database vertica
+     */
     public $password;
     
     private $_table;
     private $_resource;
     
+    /**
+     * @return string database name
+     */
     public function getDb()
     {
         if (self::$db === null && $this->activeConnect) {
@@ -48,32 +57,22 @@ class Connection extends Component
     }
     
     /**
-     * @param type $id
-     * @return \yii\vertica\Connection
+     * @param string $table set name table query
      */
-    public function setTableId($id)
-    {
-        $this->_table = $this->getTableName($id);
-        return $this;
-    }
-    
-    public function getTableName($id)
-    {
-        return $this->exec('SELECT table_name FROM tables WHERE table_id=' . QueryBuilder::preparationValue($id))->scalar();
-    }
-
     public function setTable($table)
     {
         $this->_table = $table;
     }
     
+    /**
+     * @return string table name
+     */
     public function getTable()
     {
         return $this->_table;
     }
     
     /**
-     * 
      * @param type $sql
      * @return \yii\vertica\Connection
      */
@@ -84,22 +83,38 @@ class Connection extends Component
         return $this;
     }
     
+    /**
+     * @param string $sql query execute
+     * @param array $params not worked
+     * @return boolean
+     */
     public function execute($sql, $params = [])
     {
         $stmt = odbc_prepare($this->activeConnect, $sql);
-        return odbc_execute($stmt, $params);
+        odbc_execute($stmt, $params);
+        return true;
     }
 
+    /**
+     * Get result query in resource
+     * @return resource
+     */
     public function resource()
     {
         return $this->_resource;
     }
     
+    /**
+     * @return array
+     */
     public function one()
     {
         return odbc_fetch_array($this->_resource);
     }
     
+    /**
+     * @return mixed
+     */
     public function scalar()
     {
         if ($value = odbc_fetch_array($this->_resource)) {
@@ -108,6 +123,9 @@ class Connection extends Component
         return null;
     }
     
+    /**
+     * @return array
+     */
     public function all()
     {
         $result = [];
@@ -116,12 +134,6 @@ class Connection extends Component
         }
         return $result;
     }
-
-    /**
-     * @var array the active node. key of [[nodes]]. Will be randomly selected on [[open()]].
-     */
-    public $activeConnect;
-
 
     /**
      * Returns a value indicating whether the DB connection is established.
@@ -152,6 +164,14 @@ class Connection extends Component
         $this->initConnection();
     }
     
+    /**
+     * Return is connect to params
+     * @param type $dsn
+     * @param type $username
+     * @param type $password
+     * @param type $error
+     * @return boolean
+     */
     public function isConnect($dsn, $username, $password, $error = false)
     {
         try {
@@ -167,12 +187,10 @@ class Connection extends Component
 
     /**
      * Closes the currently active DB connection.
-     * It does nothing if the connection is already closed.
      */
     public function close()
     {
         Yii::trace('Closing connection to vertica.', __CLASS__);
-        
         odbc_close($this->activeConnect);
         $this->activeConnect = null;
     }
@@ -229,37 +247,5 @@ class Connection extends Component
     public function quoteTableName($name)
     {
         return $name;
-    }
-
-    /**
-     * Performs GET HTTP request
-     *
-     * @param string $url URL
-     * @param array $options URL options
-     * @param string $body request body
-     * @param boolean $raw if response body contains JSON and should be decoded
-     * @return mixed response
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function select($sql)
-    {
-        $this->open();
-        return odbc_exec($this->activeConnect, $sql);
-    }
-    
-    public function update($table, $pkName, $pkValue, $attributes)
-    {
-        $set = [];
-        foreach ($attributes as $key => $value) {
-            if ($pkName == $key) {
-                continue;
-            }
-            $value = QueryBuilder::preparationValue($value);
-            $set[] = "$key=$value";
-        }
-        
-        $stmt = odbc_prepare($this->activeConnect, "UPDATE $table SET " . implode(', ', $set) . " WHERE $pkName=$pkValue");
-        return odbc_execute($stmt);
     }
 }

@@ -10,7 +10,6 @@ class Migration extends \yii\db\Migration
 
     /**
      * Initializes the migration.
-     * This method will set [[db]] to be the 'db' application component, if it is null.
      */
     public function init()
     {

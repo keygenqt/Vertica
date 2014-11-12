@@ -30,26 +30,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      */
     public function createCommand($db = null)
     {
-        if ($this->primaryModel !== null) {
-            // lazy loading
-            if (is_array($this->via)) {
-                // via relation
-                /* @var $viaQuery ActiveQuery */
-                list($viaName, $viaQuery) = $this->via;
-                if ($viaQuery->multiple) {
-                    $viaModels = $viaQuery->all();
-                    $this->primaryModel->populateRelation($viaName, $viaModels);
-                } else {
-                    $model = $viaQuery->one();
-                    $this->primaryModel->populateRelation($viaName, $model);
-                    $viaModels = $model === null ? [] : [$model];
-                }
-                $this->filterByModels($viaModels);
-            } else {
-                $this->filterByModels([$this->primaryModel]);
-            }
-        }
-
         /* @var $modelClass ActiveRecord */
         $modelClass = $this->modelClass;
         if ($db === null) {
@@ -68,7 +48,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     public function all($db = null)
     {
         if ($this->asArray) {
-            // TODO implement with
             return parent::all($db);
         }
 
@@ -116,50 +95,5 @@ class ActiveQuery extends Query implements ActiveQueryInterface
             $model->afterFind();
             return $model;
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function search($db = null, $options = [])
-    {
-        $result = $this->createCommand($db)->search($options);
-        // TODO implement with() for asArray
-        if (!empty($result['hits']['hits']) && !$this->asArray) {
-            $models = $this->createModels($result['hits']['hits']);
-            if (!empty($this->with)) {
-                $this->findWith($this->with, $models);
-            }
-            foreach ($models as $model) {
-                $model->afterFind();
-            }
-            $result['hits']['hits'] = $models;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function column($db = null)
-    {
-        if ($field == '_id') {
-            $command = $this->createCommand($db);
-            $command->queryParts['fields'] = [];
-            $command->queryParts['_source'] = false;
-            $result = $command->search();
-            if (empty($result['hits']['hits'])) {
-                return [];
-            }
-            $column = [];
-            foreach ($result['hits']['hits'] as $row) {
-                $column[] = $row['_id'];
-            }
-
-            return $column;
-        }
-
-        return parent::column($field, $db);
     }
 }

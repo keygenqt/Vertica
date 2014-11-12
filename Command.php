@@ -14,9 +14,15 @@ class Command extends Component
      * @var Connection
      */
     public $db;
-    public $condition;
     
+    /**
+     * @var array
+     */
     public static $attributes;
+    
+    /**
+     * @var array
+     */
     public static $pk;
     
     private $_sql;
@@ -25,16 +31,23 @@ class Command extends Component
     {
         if (isset($config['sql'])) {
             $this->_sql = $config['sql'];
-            unset($config['sql']);
         }
-        return parent::__construct($config);
+        if (isset($config['db'])) {
+            $this->db = $config['db'];
+        }
     }
 
-    public function search($q = '*')
+    /**
+     * @return array
+     */
+    public function search()
     {
-        return $this->db->exec("SELECT $q FROM {$this->db->table} $this->condition")->all();
+        return $this->db->exec($this->_sql)->all();
     }
     
+    /**
+     * @return array columns model
+     */
     public function getColumn()
     {
         if (!isset(self::$attributes[$this->db->table])) {
@@ -47,11 +60,17 @@ class Command extends Component
         return self::$attributes[$this->db->table];
     }
     
+    /**
+     * @return array
+     */
     public function getColumnData()
     {
         return $this->db->exec('SELECT * FROM COLUMNS WHERE table_name=' . QueryBuilder::preparationValue($this->db->table))->all();
     }
     
+    /**
+     * @return string pk name or first int
+     */
     public function getPk()
     {
         if (!isset(self::$pk[$this->db->table])) {
@@ -70,11 +89,19 @@ class Command extends Component
         return self::$pk[$this->db->table];
     }
     
+    /**
+     * @return array with data tables
+     */
     public function getTables()
     {
         return $this->db->exec('SELECT * FROM tables')->all();
     }
 
+    /**
+     * @param string $table
+     * @param array $columns
+     * @return \yii\vertica\Command
+     */
     public function insert($table, $columns)
     {
         $this->_sql = "INSERT INTO $table (" . implode(', ', array_keys($columns)) . ")";
@@ -85,21 +112,58 @@ class Command extends Component
         $this->_sql .= ' VALUES (' . implode(', ', $values) . ')';
         return $this;
     }
-
-    public function delete($table, $condition = '')
+    
+    /**
+     * @param type $table
+     * @param type $pkName
+     * @param type $pkValue
+     * @param type $attributes
+     * @return boolean
+     */
+    public function update($table, $pkName, $pkValue, $attributes)
     {
-        if (is_array($condition)) {
-            $params = [];
-            foreach ($condition as $key => $value) {
-                $params[] = $key . '=' . QueryBuilder::preparationValue($value);
+        $set = [];
+        foreach ($attributes as $key => $value) {
+            if ($pkName == $key) {
+                continue;
             }
-            $this->_sql = "DELETE FROM $table WHERE " . implode(' AND ', $params);
+            $value = QueryBuilder::preparationValue($value);
+            $set[] = "$key=$value";
+        }
+        $this->_sql = "UPDATE $table SET " . implode(', ', $set) . " WHERE $pkName=$pkValue";
+        $this->db->execute($this->_sql);
+        return true;
+    }
+
+    /**
+     * @param string $table
+     * @param mixed $condition array or string
+     * @return \yii\vertica\Command
+     */
+    public function delete($table = null, $condition = '')
+    {
+        if (empty($table) && !empty($this->_sql)) {
+            $this->_sql = 'DELETE ' . substr($this->_sql, strpos($this->_sql, 'FROM'));
         } else {
-            $this->_sql = "DELETE FROM $table WHERE $condition";
+            if (is_array($condition)) {
+                $params = [];
+                foreach ($condition as $key => $value) {
+                    $params[] = $key . '=' . QueryBuilder::preparationValue($value);
+                }
+                $this->_sql = "DELETE FROM $table WHERE " . implode(' AND ', $params);
+            } else {
+                $this->_sql = "DELETE FROM $table WHERE $condition";
+            }
         }
         return $this;
     }
 
+    /**
+     * @param string $table
+     * @param array $columns
+     * @param string $options
+     * @return \yii\vertica\Command
+     */
     public function createTable($table, $columns = [], $options = null)
     {
         $cols = [];
@@ -117,32 +181,43 @@ class Command extends Component
         return $this;
     }
     
+    /**
+     * @param string $table
+     * @return \yii\vertica\Command
+     */
     public function dropTable($table)
     {
         $this->_sql = "DROP TABLE $table";
         return $this;
     }
     
+    /**
+     * @return array
+     */
     public function queryOne()
     {
         return $this->db->exec($this->_sql)->one();
     }
 
+    /**
+     * @return array
+     */
     public function queryAll()
     {
         return $this->db->exec($this->_sql)->all();
     }
     
+    /**
+     * @return string
+     */
     public function queryScalar()
     {
-        return $this->db->exec($this->_sql)->one();
+        return $this->db->exec($this->_sql)->scalar();
     }
 
     public function execute($params = [])
     {
-        if ($this->_sql) {
-            return $this->db->execute($this->_sql, $params);
-        }
+        $this->db->execute($this->_sql);
     }
 
 }

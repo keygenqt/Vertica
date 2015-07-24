@@ -18,7 +18,7 @@ return [
         'vertica' => [
             'class' => 'yii\vertica\Connection',
             'dsn' => 'Driver=Vertica;Server=localhost;Database=my-database;',
-            'username' => 'username',
+            'username' => 'dbadmin',
             'password' => 'password-base',
         ],
     ]
@@ -38,7 +38,7 @@ return [
 Requirements
 ------------
 
-Performance tested on version 7.1.1
+Performance tested on version 7.1.2
 
 Installation
 ------------

@@ -50,7 +50,6 @@ Either add
 ```json
 {
     "require": {
-        ...
         "keygenqt/yii2-vertica": "*",
     }
 }

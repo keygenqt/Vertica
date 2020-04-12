@@ -1,7 +1,7 @@
 Vertica Query and ActiveRecord for Yii 2
 ==============================================
 
-(Beta version. Will have problems, please contact: keygenqt@gmail.com)
+(Beta version)
 
 This extension provides the [vertica](https://my.vertica.com/vertica-documentation/) integration for the Yii2 framework.
 It includes basic querying/search support and also implements the `ActiveRecord` pattern that allows you to store active

@@ -3,17 +3,13 @@
     "description": "Vertica integration and ActiveRecord for the Yii framework",
     "keywords": ["yii2", "vertica", "active-record", "search", "fulltext"],
     "type": "yii2-extension",
-    "license": "GPL-3.0",
-    "version":"0.5.0",
-    "support": {
-        "email": "keygenqt@gmail.com",
-        "wiki": "https://github.com/keygenqt/yii2-vertica/wiki",
-        "source": "https://github.com/keygenqt/yii2-vertica"
-    },
+    "license": "Apache-2.0",
+    "version":"1.0.0",
     "authors": [
         {
             "name": "Vitaliy Zarubin",
-            "email": "keygenqt@gmail.com",
+            "email": "dev@keygenqt.com",
+            "homepage": "http://keygenqt.com/",
             "role": "Developer"
         }
     ],

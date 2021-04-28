@@ -77,8 +77,8 @@ class Admins extends ActiveRecord
     }
 
     /**
-	 * @return array validation rules for model attributes.
-	 */
+    * @return array validation rules for model attributes.
+    */
     public function rules()
     {
         return [
@@ -86,7 +86,7 @@ class Admins extends ActiveRecord
         ];
     }
 
-    ...
+    //...
     
     public function search($params)
     {
